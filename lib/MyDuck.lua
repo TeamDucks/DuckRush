@@ -1,0 +1,3 @@
+local MyDuck = {}
+
+return MyDuck
