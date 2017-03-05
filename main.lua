@@ -13,5 +13,6 @@ end
 
 function love.draw()
   -- TODO
+  love.graphics.setBackgroundColor(172,172,172,255)
   MyDuck.draw()
 end
