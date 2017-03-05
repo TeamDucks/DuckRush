@@ -40,9 +40,8 @@ duckSprite.createAnimation("sample")
   .createFrame(428, 238, 32, 32)
   .createFrame(460, 238, 32, 32)
 
--- Kiem cai sheet gi ma kho chia qua
 initAnimation(duckSprite, "retract", frameStepper(4,88,35,64), 7)
-duckSprite.setAnimation("retract", 5)
+duckSprite.setAnimation("retract", 10)
 
 function MyDuck.update(dt)
   -- TODO
@@ -51,9 +50,14 @@ end
 
 function MyDuck.draw(dt)
   -- TODO
-  duckSprite.draw(
-    (love.graphics.getWidth() - 16) / 2,
-    (love.graphics.getHeight() - 16) / 2);
+  local centerX = love.graphics.getWidth() / 2
+  local centerY = love.graphics.getHeight() / 2
+
+  duckSprite.draw(centerX - 8, centerY - 8)
+  local blame = "Thua! Sheet gì khó chia quá"
+  love.graphics.print(blame,
+                      centerX - love.graphics.getFont():getWidth(blame) / 2,
+                      centerY + love.graphics.getFont():getHeight(blame) + 60)
 end
 
 return MyDuck
