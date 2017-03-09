@@ -14,4 +14,5 @@ end
 function love.draw()
   -- TODO
   DemoDuck.draw()
+  love.graphics.setBackgroundColor(172,172,172,255)
 end
