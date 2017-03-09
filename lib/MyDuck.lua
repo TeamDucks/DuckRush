@@ -1,6 +1,6 @@
 local MyDuck = {}
 
-local duckSprite = require("lib.SpriteSet").load("/res/koopa_troopa.png")
+local duckSprite = require("lib.SpriteSet")().load("/res/koopa_troopa.png")
 
 duckSprite.createAnimation("sample")
   .createFrame(364, 238, 32, 32)
