@@ -2,7 +2,7 @@ local DemoDuck = {}
 
 local SpriteSet = require("lib.SpriteSet")
 
-local DuckSprite = require("lib.SpriteSet")().load("/res/proto-duck.png")
+local DuckSpriteSet = require("lib.SpriteSet")().load("/res/proto-duck.png")
   .createAnimation("straight")
   .createFrame(0, 0, 50, 50)
   .createFrame(50, 0, 50, 50)
@@ -19,9 +19,9 @@ local DuckSprite = require("lib.SpriteSet")().load("/res/proto-duck.png")
   .createFrame(150, 0, 50, 50)
   .createFrame(250, 0, 50, 50)
 
-DuckSprite.setAnimation("straight", 10)
+local DuckSprite = DuckSpriteSet.createSprite().setAnimation("straight", 10).setPosition(150, 150, 10)
 
-local RoadSprite = require("lib.SpriteSet")().load("/res/proto-road.png")
+local RoadSpriteSet = require("lib.SpriteSet")().load("/res/proto-road.png")
   .createAnimation("LeftZero").createFrame(0, 0, 50, 50)
   .createAnimation("RightZero").createFrame(50, 0, 50, 50)
   .createAnimation("LeftMinusOne").createFrame(100, 0, 50, 50)
@@ -33,20 +33,21 @@ local RoadSprite = require("lib.SpriteSet")().load("/res/proto-road.png")
   .createAnimation("LeftTwo").createFrame(400, 0, 50, 50)
   .createAnimation("RightTwo").createFrame(450, 0, 50, 50)
 
-local timeTotal = 0
-function DemoDuck.update(dt)
-  timeTotal = timeTotal + dt
-  DuckSprite.update(dt)
+for i = 0, 11 do
+  RoadSpriteSet.createSprite().setAnimation('LeftZero', 0).setPosition(100,50*i)
+  RoadSpriteSet.createSprite().setAnimation('RightOne', 0).setPosition(150,50*i)
+  RoadSpriteSet.createSprite().setAnimation('LeftOne', 0).setPosition(200,50*i)
+  RoadSpriteSet.createSprite().setAnimation('RightZero', 0).setPosition(250,50*i)
 end
 
-function DemoDuck.draw()
+local timeTotal = 0
+function updateDuck(dt)
+  timeTotal = timeTotal + dt
+end
+scheduler.addUpdate(updateDuck)
+
+function drawTime()
   love.graphics.print( timeTotal, 1, 1)
-  DuckSprite.draw(50, 50)
-  -- FIXME: draw multiple animation instances
-  RoadSprite.setAnimation("LeftOne", 0)
-  RoadSprite.draw(100, 100)
-  RoadSprite.setAnimation("RightOne", 0)
-  RoadSprite.draw(200, 100)
 end
 
 return DemoDuck

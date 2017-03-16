@@ -23,47 +23,72 @@ return function ()
     return SpriteSet
   end
 
-  local currentAnimation = nil
-  local frameTime = 0
-  local currentFrame = 1
-  local frameDelta = 0
-  function SpriteSet.setAnimation(name, frameRate)
-    if animations[name] ~= nil then
-      if currentAnimation ~= name then -- reset animation only if the name is changed
-        currentAnimation = name
-        currentFrame = 1
-        frameDelta = 0
-      end
-      if frameRate > 0 then -- frame rate is 0 in case there is no animation
-        frameTime = 1 / frameRate
-      else
-        frameTime = 0
-      end
-    end
-  end
+  function SpriteSet.createSprite()
+    local Sprite = {}
+    local currentAnimation = nil
+    local frameTime = 0
+    local currentFrame = 1
+    local frameDelta = 0
 
-  function SpriteSet.update(dt)
-    if currentAnimation == nil or image == nil then
-      return nil
-    end
-    if frameTime ~= 0 then
-      frameDelta = frameDelta + dt
-      while frameDelta > frameTime do
-        frameDelta = frameDelta - frameTime
-        if currentFrame >= animations[currentAnimation].length then
+    function Sprite.setAnimation(name, frameRate)
+      if animations[name] ~= nil then
+        if currentAnimation ~= name then -- reset animation only if the name is changed
+          currentAnimation = name
           currentFrame = 1
+          frameDelta = 0
+        end
+        if frameRate > 0 then -- frame rate is 0 in case there is no animation
+          frameTime = 1 / frameRate
         else
-          currentFrame = currentFrame + 1
+          frameTime = 0
+        end
+      end
+      return Sprite
+    end
+
+    function updateSprite(dt)
+      if currentAnimation == nil or image == nil then
+        return nil
+      end
+      if frameTime ~= 0 then
+        frameDelta = frameDelta + dt
+        while frameDelta > frameTime do
+          frameDelta = frameDelta - frameTime
+          if currentFrame >= animations[currentAnimation].length then
+            currentFrame = 1
+          else
+            currentFrame = currentFrame + 1
+          end
         end
       end
     end
-  end
+    scheduler.addUpdate(updateSprite)
 
-  function SpriteSet.draw(x, y)
-    if currentAnimation == nil or image == nil then
-      return nil
+    local x = 0; local y = 0
+    local layer = 1
+    function drawSprite()
+      if currentAnimation == nil or image == nil then
+        return nil
+      end
+      love.graphics.draw(image, animations[currentAnimation].frames[currentFrame], x, y)
     end
-    love.graphics.draw(image, animations[currentAnimation].frames[currentFrame], x, y)
+    scheduler.addDraw(drawSprite, layer)
+    function Sprite.setPosition(posX, posY, posLayer)
+      x, y = posX, posY
+      if posLayer ~= nil and posLayer ~= layer then
+        scheduler.removeDraw(drawSprite, layer)
+        scheduler.addDraw(drawSprite, posLayer)
+        layer = posLayer
+      end
+      return Sprite
+    end
+
+    function Sprite.removeSchedule()
+      scheduler.removeUpdate(updateSprite)
+      scheduler.removeDraw(drawSprite, layer)
+    end
+
+    return Sprite
   end
 
   return SpriteSet
