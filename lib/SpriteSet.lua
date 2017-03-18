@@ -24,7 +24,7 @@ return function ()
   end
 
   function SpriteSet.createSprite()
-    local Sprite = {}
+    local Sprite = {x = 0, y = 0}
     local currentAnimation = nil
     local frameTime = 0
     local currentFrame = 1
@@ -64,17 +64,16 @@ return function ()
     end
     scheduler.addUpdate(updateSprite)
 
-    local x = 0; local y = 0
     local layer = 1
     function drawSprite()
       if currentAnimation == nil or image == nil then
         return nil
       end
-      love.graphics.draw(image, animations[currentAnimation].frames[currentFrame], x, y)
+      love.graphics.draw(image, animations[currentAnimation].frames[currentFrame], Sprite.x, Sprite.y)
     end
     scheduler.addDraw(drawSprite, layer)
     function Sprite.setPosition(posX, posY, posLayer)
-      x, y = posX, posY
+      Sprite.x, Sprite.y = posX, posY
       if posLayer ~= nil and posLayer ~= layer then
         scheduler.removeDraw(drawSprite, layer)
         scheduler.addDraw(drawSprite, posLayer)

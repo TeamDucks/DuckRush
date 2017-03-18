@@ -1,7 +1,5 @@
 local DemoDuck = {}
 
-local SpriteSet = require("lib.SpriteSet")
-
 local DuckSpriteSet = require("lib.SpriteSet")().load("/res/proto-duck.png")
   .createAnimation("straight")
   .createFrame(0, 0, 50, 50)
@@ -19,7 +17,7 @@ local DuckSpriteSet = require("lib.SpriteSet")().load("/res/proto-duck.png")
   .createFrame(150, 0, 50, 50)
   .createFrame(250, 0, 50, 50)
 
-local DuckSprite = DuckSpriteSet.createSprite().setAnimation("straight", 10).setPosition(150, 150, 10)
+local DuckSprite = DuckSpriteSet.createSprite().setAnimation("straight", 10).setPosition(150, 450, 10)
 
 local RoadSpriteSet = require("lib.SpriteSet")().load("/res/proto-road.png")
   .createAnimation("LeftZero").createFrame(0, 0, 50, 50)
@@ -33,11 +31,12 @@ local RoadSpriteSet = require("lib.SpriteSet")().load("/res/proto-road.png")
   .createAnimation("LeftTwo").createFrame(400, 0, 50, 50)
   .createAnimation("RightTwo").createFrame(450, 0, 50, 50)
 
-for i = 0, 11 do
-  RoadSpriteSet.createSprite().setAnimation('LeftZero', 0).setPosition(100,50*i)
-  RoadSpriteSet.createSprite().setAnimation('RightOne', 0).setPosition(150,50*i)
-  RoadSpriteSet.createSprite().setAnimation('LeftOne', 0).setPosition(200,50*i)
-  RoadSpriteSet.createSprite().setAnimation('RightZero', 0).setPosition(250,50*i)
+-- TODO: cleanup / reuse off-screen tiles
+for i = 0, -1000, -1 do
+  RoadSpriteSet.createSprite().setAnimation('LeftZero',  0).setPosition(100, 600 + 50*i)
+  RoadSpriteSet.createSprite().setAnimation('RightOne',  0).setPosition(150, 600 + 50*i)
+  RoadSpriteSet.createSprite().setAnimation('LeftOne',   0).setPosition(200, 600 + 50*i)
+  RoadSpriteSet.createSprite().setAnimation('RightZero', 0).setPosition(250, 600 + 50*i)
 end
 
 local timeTotal = 0
@@ -49,5 +48,7 @@ scheduler.addUpdate(updateDuck)
 function drawTime()
   love.graphics.print( timeTotal, 1, 1)
 end
+
+DemoDuck.duck = DuckSprite
 
 return DemoDuck
