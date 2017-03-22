@@ -8,6 +8,31 @@ return function ()
     return SpriteSet
   end
 
+  local cut = {startX=0, startY=0, cols=0, sizeX=32, sizeY=32}
+  function SpriteSet.cut(newStartX, newStartY, newCols, newSizeX, newSizeY)
+    startX = newStartX
+    startY = newStartY
+    cols = newCols
+    sizeX = newSizeX
+    sizeY = newSizeY
+    return SpriteSet
+  end
+
+  function SpriteSet.cutAnimation(name, frameIndexes)
+    animations[name] = {length = #frameIndexes, frames = {}}
+    for i = 1, #frameIndexes do
+      local index = frameIndexes[i]
+      local row = 0
+      local col = index - 1
+      if cut.cols ~= 0 then
+        row = math.floor(col/cut.cols)
+        col = col % cut.cols
+      end
+      animations[name].frames[i] = love.graphics.newQuad(0 + col*cut.sizeX, 0 + row*cut.sizeY, cut.sizeX, cut.sizeY, image:getWidth(), image:getHeight())
+    end
+    return SpriteSet
+  end
+
   local buildingName = nil
   function SpriteSet.createAnimation(name)
     animations[name] = {length = 0, frames = {}}
