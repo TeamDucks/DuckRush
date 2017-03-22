@@ -18,13 +18,14 @@ local RoadSpriteSet = require("lib.SpriteSet")().load("/res/proto-road.png")
   .cutAnimation("LeftTwo", {5})
   .cutAnimation("RightTwo", {6})
 
-for i = 0, 11 do
-  RoadSpriteSet.createSprite().setAnimation('LeftZero', 0).setPosition(32*2, 32*i)
-  RoadSpriteSet.createSprite().setAnimation('LeftOne', 0).setPosition(32*3, 32*i)
-  RoadSpriteSet.createSprite().setAnimation('LeftTwo', 0).setPosition(32*4, 32*i)
-  RoadSpriteSet.createSprite().setAnimation('RightTwo', 0).setPosition(32*5, 32*i)
-  RoadSpriteSet.createSprite().setAnimation('RightOne', 0).setPosition(32*6, 32*i)
-  RoadSpriteSet.createSprite().setAnimation('RightZero', 0).setPosition(32*7, 32*i)
+-- TODO: cleanup / reuse off-screen tiles
+for i = 0, -1000, -1 do
+  RoadSpriteSet.createSprite().setAnimation('LeftZero', 0).setPosition(32*2,600+32*i)
+  RoadSpriteSet.createSprite().setAnimation('LeftOne', 0).setPosition(32*3, 600+32*i)
+  RoadSpriteSet.createSprite().setAnimation('LeftTwo', 0).setPosition(32*4, 600+32*i)
+  RoadSpriteSet.createSprite().setAnimation('RightTwo', 0).setPosition(32*5, 600+32*i)
+  RoadSpriteSet.createSprite().setAnimation('RightOne', 0).setPosition(32*6, 600+32*i)
+  RoadSpriteSet.createSprite().setAnimation('RightZero', 0).setPosition(32*7, 600+32*i)
 end
 
 local timeTotal = 0
@@ -36,5 +37,7 @@ scheduler.addUpdate(updateDuck)
 function drawTime()
   love.graphics.print( timeTotal, 1, 1)
 end
+
+DemoDuck.duck = DuckSprite
 
 return DemoDuck

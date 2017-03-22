@@ -7,7 +7,7 @@ scheduler =
     local this = {}
     local listUpdate = {}
     local listLayer = {}
-    for i = 1, 10 do
+    for i = 0, 10 do
       listLayer[i] = {}
     end
 
@@ -25,9 +25,10 @@ scheduler =
       end
     end
 
+    --- Layer 0 is for special setup operation like camera
     function this.addDraw(drawFunction, layer)
       layer = layer == nil and 1 or layer
-      layer = layer < 1 and 1 or layer
+      layer = layer < 0 and 1 or layer
       layer = layer > 10 and 10 or layer
       listLayer[layer][drawFunction] = drawFunction
     end
@@ -37,7 +38,7 @@ scheduler =
     end
 
     function this.doDraw()
-      for i = 1, 10 do
+      for i = 0, 10 do
         for _, func in pairs(listLayer[i]) do
           func()
         end
@@ -50,9 +51,23 @@ scheduler =
 --------------------------------------------------------------------------------
 
 local demoDuck = require('lib.DemoDuck')
+local Tween = require('lib.Tween')
+local camera = require('lib.Camera')
+
 
 function love.load(arg)
   -- do nothing for now
+  camera.setPosition(0, 0)
+  Tween.ease_linear(camera, {x = 0, y = -1000}, 60)
+
+  local function move_duck()
+    Tween.ease_back_in_out(
+      demoDuck.duck,
+      {x = demoDuck.duck.x, y = demoDuck.duck.y - 35},
+      2,
+      move_duck)
+  end
+  move_duck()
 end
 
 function love.update(dt)
