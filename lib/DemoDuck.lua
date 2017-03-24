@@ -20,25 +20,47 @@ local RoadSpriteSet = SpriteSet.load("/res/proto-road.png")
   .animation("RightTwo", {6})
 
 -- TODO: cleanup / reuse off-screen tiles
-for i = 0, -1000, -1 do
-  RoadSpriteSet.instance({x=32*2, y=600+32*i}, 'LeftZero', 0).layer(_layer_road)
-  RoadSpriteSet.instance({x=32*3, y=600+32*i}, 'LeftOne', 0).layer(_layer_road)
-  RoadSpriteSet.instance({x=32*4, y=600+32*i}, 'LeftTwo', 0).layer(_layer_road)
-  RoadSpriteSet.instance({x=32*5, y=600+32*i}, 'RightTwo', 0).layer(_layer_road)
-  RoadSpriteSet.instance({x=32*6, y=600+32*i}, 'RightOne', 0).layer(_layer_road)
-  RoadSpriteSet.instance({x=32*7, y=600+32*i}, 'RightZero', 0).layer(_layer_road)
+local function wrapRoadSprite(animationName, pos)
+  local sprite = RoadSpriteSet.instance(pos, animationName, 0).layer(_layer_road)
+  local camera = World.get('camera')
+  local remover = {
+    update = function(dt)
+      if pos.y > camera.y+32*11 then
+        sprite.remove()
+        World.remove(remover)
+      end
+    end
+  }
+  World.register(remover)
 end
 
 local timeTotal = 0
 World.register({
     load = function()
       local camera = World.get('camera')
+      for i = 1, 10 do
+        wrapRoadSprite('LeftZero', {x=32*2, y=32*i})
+        wrapRoadSprite('LeftOne', {x=32*3, y=32*i})
+        wrapRoadSprite('LeftTwo', {x=32*4, y=32*i})
+        wrapRoadSprite('RightTwo', {x=32*5, y=32*i})
+        wrapRoadSprite('RightOne', {x=32*6, y=32*i})
+        wrapRoadSprite('RightZero', {x=32*7, y=32*i})
+      end
       camera.setPosition(0, 0)
-      Tween.ease_linear(camera, {x = 0, y = -1000}, 60)
+      local function move_camera()
+        wrapRoadSprite('LeftZero', {x=32*2, y=camera.y})
+        wrapRoadSprite('LeftOne', {x=32*3, y=camera.y})
+        wrapRoadSprite('LeftTwo', {x=32*4, y=camera.y})
+        wrapRoadSprite('RightTwo', {x=32*5, y=camera.y})
+        wrapRoadSprite('RightOne', {x=32*6, y=camera.y})
+        wrapRoadSprite('RightZero', {x=32*7, y=camera.y})
+        Tween.ease_linear(camera, {x = camera.x, y = camera.y - 32}, 2, move_camera)
+      end
+      move_camera()
       local function move_duck()
         Tween.ease_back_in_out(
           DemoDuck,
-          {x = DemoDuck.x, y = DemoDuck.y - 35},
+          {x = DemoDuck.x, y = DemoDuck.y - 32},
           2,
           move_duck
         )

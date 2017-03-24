@@ -82,6 +82,7 @@ return {
           end,
           layer = function(layer)
             currentLayer = layer
+            return Sprite
           end,
           remove = function()
             World.remove(worldEntity)

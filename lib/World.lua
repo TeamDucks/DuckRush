@@ -1,4 +1,5 @@
 local entities = {}
+local scheduledRemoval = {}
 
 local origin = {
   onload = love.load,
@@ -22,6 +23,11 @@ love.update = function(dt)
       entity.update(dt)
     end
   end
+  local i
+  for i = 1, #scheduledRemoval do
+    entities[scheduledRemoval[i]] = nil
+  end
+  scheduledRemoval = {}
 end
 
 love.draw = function()
@@ -45,7 +51,7 @@ World = {
     end
   end,
   remove = function(objectorname)
-    entities[objectorname] = nil
+    scheduledRemoval[#scheduledRemoval+1] = objectorname
   end,
   reset = function()
     entities = {}
