@@ -79,14 +79,8 @@ local function doUpdate(dt)
       tween._obj.x = tween._orig_pos.x + fns[tween._ease](progress) * (tween._target_pos.x - tween._orig_pos.x)
       tween._obj.y = tween._orig_pos.y + fns[tween._ease](progress) * (tween._target_pos.y - tween._orig_pos.y)
     else
-      if debug then
-        print("A tween has finished")
-      end
       tween._obj.x = tween._target_pos.x
       tween._obj.y = tween._target_pos.y
-      if debug then
-        print("A tween is cleaned up")
-      end
       tween._done_callback(tween.obj)
       table.remove(tweens, i)
     end
