@@ -93,7 +93,7 @@ local function doUpdate(dt)
   end
 end
 
-scheduler.addUpdate(doUpdate)
+World.register({update = doUpdate})
 
 --------------------------------------------------------------------------------
 
