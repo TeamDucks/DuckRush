@@ -1,4 +1,4 @@
-_layer_max = 10
+_layer_max = 4
 _layer_camera_init = 0
 _layer_road = 1
 _layer_duck = 2
