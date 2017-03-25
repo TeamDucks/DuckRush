@@ -42,7 +42,17 @@ love.draw = function()
   end
 end
 
+function love.keypressed(key, isrepeat)
+  for _, entity in pairs(entities) do
+    if entity.keypressed then
+      entity.keypressed(key, isrepeat)
+    end
+  end
+end
+
+
 World = {
+
   register = function(object, name)
     if name ~= nil then
       entities[name] = object
@@ -55,6 +65,7 @@ World = {
   end,
   reset = function()
     entities = {}
+    scheduledRemoval = {}
   end,
   get = function(name)
     return entities[name]

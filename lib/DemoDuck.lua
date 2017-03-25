@@ -1,8 +1,15 @@
-local DemoDuck = {x = 32*5, y = 32*7}
-
+local utils = require('utils')
 local Tween = require('lib.Tween')
 local SpriteSet = require("lib.SpriteSet")
 
+-- local DemoDuck = {x = 32*5, y = 32*7}
+local DemoDuck = utils.getCenter()
+local numOfRowRoad = math.ceil(love.graphics.getHeight()/32)
+local tweenTime = 0.5;
+
+--Controls--
+
+--end of controls--
 local DuckSpriteSet = SpriteSet.load("/res/proto-duck.png").cut(0, 0, 3, 32, 32)
   .animation("straight", {1, 2, 1, 3})
   .animation("right", {4, 5, 4, 6})
@@ -19,13 +26,14 @@ local RoadSpriteSet = SpriteSet.load("/res/proto-road.png")
   .animation("LeftTwo", {5})
   .animation("RightTwo", {6})
 
+
 -- TODO: cleanup / reuse off-screen tiles
 local function wrapRoadSprite(animationName, pos)
   local sprite = RoadSpriteSet.instance(pos, animationName, 0).layer(_layer_road)
   local camera = World.get('camera')
   local remover = {
     update = function(dt)
-      if pos.y > camera.y+32*11 then
+      if pos.y > camera.y+32*numOfRowRoad then
         sprite.remove()
         World.remove(remover)
       end
@@ -35,46 +43,57 @@ local function wrapRoadSprite(animationName, pos)
 end
 
 local timeTotal = 0
+local function renderRoadRow(x,y)
+  wrapRoadSprite('LeftZero', {x=x-32*3, y=y})
+  wrapRoadSprite('LeftOne', {x=x-32*2, y=y})
+  wrapRoadSprite('LeftTwo', {x=x-32, y=y})
+
+  wrapRoadSprite('RightTwo', {x=x, y=y})
+  wrapRoadSprite('RightOne', {x=x+32, y=y})
+  wrapRoadSprite('RightZero', {x=x+32*2, y=y})
+end
 World.register({
     load = function()
       local camera = World.get('camera')
-      for i = 1, 10 do
-        wrapRoadSprite('LeftZero', {x=32*2, y=32*i})
-        wrapRoadSprite('LeftOne', {x=32*3, y=32*i})
-        wrapRoadSprite('LeftTwo', {x=32*4, y=32*i})
-        wrapRoadSprite('RightTwo', {x=32*5, y=32*i})
-        wrapRoadSprite('RightOne', {x=32*6, y=32*i})
-        wrapRoadSprite('RightZero', {x=32*7, y=32*i})
+      local xy = utils.getCenter()
+      for i = 0,numOfRowRoad do
+        renderRoadRow(xy.x, i*32)
       end
       camera.setPosition(0, 0)
       local function move_camera()
-        wrapRoadSprite('LeftZero', {x=32*2, y=camera.y})
-        wrapRoadSprite('LeftOne', {x=32*3, y=camera.y})
-        wrapRoadSprite('LeftTwo', {x=32*4, y=camera.y})
-        wrapRoadSprite('RightTwo', {x=32*5, y=camera.y})
-        wrapRoadSprite('RightOne', {x=32*6, y=camera.y})
-        wrapRoadSprite('RightZero', {x=32*7, y=camera.y})
-        Tween.ease_linear(camera, {x = camera.x, y = camera.y - 32}, 2, move_camera)
+        love.graphics.print("Tween ended", 0, 50)
+        renderRoadRow(xy.x, camera.y-32)
+        Tween.ease_linear(camera, {x = camera.x, y = camera.y - 32}, tweenTime, move_camera)
       end
       move_camera()
       local function move_duck()
         Tween.ease_back_in_out(
           DemoDuck,
           {x = DemoDuck.x, y = DemoDuck.y - 32},
-          2,
+          tweenTime,
           move_duck
         )
       end
-      move_duck()
+      -- move_duck()
     end,
     update = function(dt)
       timeTotal = timeTotal + dt
+      DemoDuck.y = DemoDuck.y - dt * 32/tweenTime
+      World.get('camera').y = DemoDuck.y
     end,
     draw = function(layer)
       if layer == _layer_ui then
         love.graphics.print( timeTotal, 1, 1)
       end
-    end
+    end,
+    keypressed = function(key)
+      print("in here", key)
+      if key == 'left' then
+        DemoDuck.x = DemoDuck.x-32
+      elseif key == 'right' then
+        DemoDuck.x = DemoDuck.x+32
+      end
+    end 
                }, 'duck')
 
 return DemoDuck
