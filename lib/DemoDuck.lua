@@ -5,7 +5,8 @@ local SpriteSet = require("lib.SpriteSet")
 -- local DemoDuck = {x = 32*5, y = 32*7}
 local DemoDuck = utils.getCenter()
 local numOfRowRoad = math.ceil(love.graphics.getHeight()/32)
-local tweenTime = 0.5;
+local tweenTime = 1
+local direction = 0
 
 --Controls--
 
@@ -61,7 +62,7 @@ World.register({
       end
       camera.setPosition(0, 0)
       local function move_camera()
-        love.graphics.print("Tween ended", 0, 50)
+        --love.graphics.print("Tween ended", 0, 50)
         renderRoadRow(xy.x, camera.y-32)
         Tween.ease_linear(camera, {x = camera.x, y = camera.y - 32}, tweenTime, move_camera)
       end
@@ -69,17 +70,17 @@ World.register({
       local function move_duck()
         Tween.ease_back_in_out(
           DemoDuck,
-          {x = DemoDuck.x, y = DemoDuck.y - 32},
+          {x = DemoDuck.x + direction*32, y = DemoDuck.y - 32},
           tweenTime,
           move_duck
         )
       end
-      -- move_duck()
+      move_duck()
     end,
     update = function(dt)
       timeTotal = timeTotal + dt
-      DemoDuck.y = DemoDuck.y - dt * 32/tweenTime
-      World.get('camera').y = DemoDuck.y
+      --DemoDuck.y = DemoDuck.y - dt * 32/tweenTime
+      --World.get('camera').y = DemoDuck.y
     end,
     draw = function(layer)
       if layer == _layer_ui then
@@ -87,13 +88,17 @@ World.register({
       end
     end,
     keypressed = function(key)
-      print("in here", key)
       if key == 'left' then
-        DemoDuck.x = DemoDuck.x-32
+        direction = -1
+        DuckSprite.animation('left', 10)
       elseif key == 'right' then
-        DemoDuck.x = DemoDuck.x+32
+        direction = 1
+        DuckSprite.animation('right', 10)
+      else
+        direction = 0
+        DuckSprite.animation('straight', 10)
       end
-    end 
+    end
                }, 'duck')
 
 return DemoDuck
