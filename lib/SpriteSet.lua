@@ -11,11 +11,11 @@ return {
 
     SpriteSet = {
       cut = function(newStartX, newStartY, newCols, newSizeX, newSizeY)
-        startX = newStartX
-        startY = newStartY
-        cols = newCols
-        sizeX = newSizeX
-        sizeY = newSizeY
+        cut.startX = newStartX
+        cut.startY = newStartY
+        cut.cols = newCols
+        cut.sizeX = newSizeX
+        cut.sizeY = newSizeY
         return SpriteSet
       end,
       animation = function(name, frameIndexes)
@@ -34,7 +34,7 @@ return {
             col = col % cut.cols
           end
           animations[name].frames[i] = love.graphics.newQuad(
-            0 + col*cut.sizeX, 0 + row*cut.sizeY,
+            cut.startX + col*cut.sizeX, cut.startY + row*cut.sizeY,
             cut.sizeX, cut.sizeY,
             image:getWidth(), image:getHeight())
         end
@@ -65,7 +65,7 @@ return {
         local currentLayer = 1
 
         Sprite = {
-          animation = function(name, framerate)
+          animation = function(name, frameRate)
             if animations[name] ~= nil then
               if currentAnimation ~= name then -- reset animation only if the name is changed
                 currentAnimation = name
